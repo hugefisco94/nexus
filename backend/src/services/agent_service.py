@@ -46,13 +46,11 @@ async def execute_task(
     if not team:
         raise ValueError(f"Team {task['team_id']} not found")
 
-    # Build agent lookup
     agents_map: dict[str, dict] = {}
     for agent in team["agents"]:
         a = agent if isinstance(agent, dict) else agent.model_dump()
         agents_map[a["id"]] = a
 
-    # Update task status
     await db.update_task(
         task_id,
         {
@@ -72,14 +70,12 @@ async def execute_task(
     else:
         await _execute_sequential(task_id, steps, agents_map, results, on_update)
 
-    # Calculate totals
     executions = await db.list_executions(task_id)
     total_tokens = sum(
         e.get("tokens_in", 0) + e.get("tokens_out", 0) for e in executions
     )
     total_cost = sum(e.get("cost_usd", 0) for e in executions)
 
-    # Check if any step failed
     failed = any(s.get("status") == TaskStatus.FAILED.value for s in steps)
 
     await db.update_task(
@@ -147,7 +143,6 @@ async def _execute_step(
         )
 
     try:
-        # Build messages
         system_msg = (
             f"You are {agent['name']}, role: {agent['role']}. "
             f"{agent.get('description', '')} "
@@ -173,7 +168,6 @@ async def _execute_step(
                 }
             )
 
-        # Call LiteLLM
         result = await litellm_client.complete(
             model=agent["model"],
             messages=messages,
