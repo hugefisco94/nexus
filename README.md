@@ -1,151 +1,206 @@
-# Nexus — AI Agent Mission Control
-
 <div align="center">
 
-```
-  ┌─────────────────────────────────────────────┐
-  │         N E X U S   v0.1.0                  │
-  │    AI Agent Mission Control Dashboard       │
-  │                                             │
-  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  │
-  │  │  Opus    │  │  Codex   │  │  Sonnet  │  │
-  │  │ Orchest. │  │ Backend  │  │  Actor   │  │
-  │  └────┬─────┘  └────┬─────┘  └────┬─────┘  │
-  │       └──────────────┼──────────────┘       │
-  │              ┌───────┴───────┐              │
-  │              │ ORCHESTRATOR  │              │
-  │              └───────────────┘              │
-  └─────────────────────────────────────────────┘
-```
+# N E X U S
 
-**Multi-model agent team orchestration with real-time monitoring**
+**Orchestrate multi-model AI agent teams. Observe every decision in real time.**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://python.org)
-[![React](https://img.shields.io/badge/React-19-61dafb.svg)](https://react.dev)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg)](https://fastapi.tiangolo.com)
+<br/>
+
+<a href="https://github.com/hugefisco94/nexus/releases/latest">
+  <img alt="Release" src="https://img.shields.io/github/v/release/hugefisco94/nexus?style=for-the-badge&logo=starship&color=C9CBFF&logoColor=D9E0EE&labelColor=0d1117&include_prerelease&sort=semver" />
+</a>
+<a href="https://github.com/hugefisco94/nexus/blob/master/LICENSE">
+  <img alt="License" src="https://img.shields.io/github/license/hugefisco94/nexus?style=for-the-badge&logo=starship&color=ee999f&logoColor=D9E0EE&labelColor=0d1117" />
+</a>
+<a href="https://github.com/hugefisco94/nexus/pulse">
+  <img alt="Last commit" src="https://img.shields.io/github/last-commit/hugefisco94/nexus?style=for-the-badge&logo=starship&color=8bd5ca&logoColor=D9E0EE&labelColor=0d1117" />
+</a>
+<a href="https://github.com/hugefisco94/nexus/stargazers">
+  <img alt="Stars" src="https://img.shields.io/github/stars/hugefisco94/nexus?style=for-the-badge&logo=starship&color=c69ff5&logoColor=D9E0EE&labelColor=0d1117" />
+</a>
+
+<br/><br/>
+
+<a href="#quick-start">Quick Start</a>&nbsp;&nbsp;&bull;&nbsp;&nbsp;<a href="#architecture">Architecture</a>&nbsp;&nbsp;&bull;&nbsp;&nbsp;<a href="#api-reference">API</a>&nbsp;&nbsp;&bull;&nbsp;&nbsp;<a href="https://github.com/hugefisco94/nexus/releases">Releases</a>
+
+<br/>
+
+<img src="https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white" alt="FastAPI"/>
+<img src="https://img.shields.io/badge/React_19-61DAFB?style=flat-square&logo=react&logoColor=black" alt="React"/>
+<img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript"/>
+<img src="https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" alt="TailwindCSS"/>
+<img src="https://img.shields.io/badge/LiteLLM-000000?style=flat-square&logo=openai&logoColor=white" alt="LiteLLM"/>
+<img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker"/>
 
 </div>
 
+<br/>
+
+<p align="center"><em>"Humans steer. Agents execute."</em></p>
+
 ---
 
-## What is Nexus?
+## Why Nexus
 
-Nexus is a **Harness Engineering** dashboard that visualizes and orchestrates multi-model AI agent teams. Inspired by Mitchell Hashimoto's methodology:
+Nexus gives you a single control surface for multi-model AI agent teams. Define a team of specialist models, assign each a role, then launch tasks and watch execution unfold in real time through WebSocket-driven dashboards.
 
-> *"Humans steer. Agents execute."*
+One endpoint provisions a battle-tested five-agent team. One command deploys the entire stack.
 
-- **Agent Team Composer** — Define teams with specialized model roles (Orchestrator, Backend, Frontend, Security, Designer)
-- **Live Execution Monitor** — Watch agents work in parallel with real-time WebSocket updates
-- **Task Pipeline Builder** — Create multi-step pipelines with dependency graphs
-- **Cost & Performance Analytics** — Track tokens, cost, and latency per model
-- **LiteLLM Integration** — Connect to 88+ models via existing LiteLLM proxy
+<br/>
+
+<table>
+<tr>
+<td width="25%" align="center"><strong>Compose</strong><br/><sub>Build teams with role-specific models</sub></td>
+<td width="25%" align="center"><strong>Execute</strong><br/><sub>Parallel &amp; sequential pipelines</sub></td>
+<td width="25%" align="center"><strong>Observe</strong><br/><sub>Live WebSocket execution feed</sub></td>
+<td width="25%" align="center"><strong>Analyze</strong><br/><sub>Tokens, cost, latency per agent</sub></td>
+</tr>
+</table>
+
+<br/>
 
 ## Architecture
 
+```mermaid
+graph TB
+    subgraph CLIENT ["CLIENT"]
+        direction LR
+        D["Dashboard"]
+        TB["TeamBuilder"]
+        EM["ExecutionMonitor"]
+        RV["ResultsViewer"]
+    end
+
+    subgraph API ["FASTAPI  :8800"]
+        direction LR
+        REST["/api/*"]
+        WS["/ws"]
+        ORCH["Orchestrator"]
+    end
+
+    subgraph DATA ["PERSISTENCE"]
+        direction LR
+        DB[("SQLite\nWAL mode")]
+        LLM["LiteLLM\n:4000"]
+    end
+
+    CLIENT -- "REST + WebSocket" --> API
+    ORCH --> DB
+    ORCH --> LLM
+
+    style CLIENT fill:#1e1e2e,stroke:#cba6f7,color:#cdd6f4
+    style API fill:#1e1e2e,stroke:#89b4fa,color:#cdd6f4
+    style DATA fill:#1e1e2e,stroke:#a6e3a1,color:#cdd6f4
 ```
-┌─────────────────────────────────┐
-│   BROWSER (React 19 + Vite)     │
-│   ├── Dashboard                 │
-│   ├── Team Builder              │
-│   ├── Execution Monitor         │
-│   └── Results Viewer            │
-└──────────────┬──────────────────┘
-               │ REST + WebSocket
-┌──────────────┴──────────────────┐
-│   BACKEND (FastAPI + uvicorn)   │
-│   ├── /api/* routes             │
-│   ├── /ws WebSocket             │
-│   ├── Agent Orchestration       │
-│   └── LiteLLM Client           │
-└──────────────┬──────────────────┘
-               │
-┌──────────────┴──────────────────┐
-│   DATA (SQLite + LiteLLM)       │
-│   ├── Teams / Agents            │
-│   ├── Tasks / Steps             │
-│   ├── Executions                │
-│   └── localhost:4000 (LiteLLM)  │
-└─────────────────────────────────┘
+
+<br/>
+
+### Data Model
+
+```mermaid
+erDiagram
+    TEAM ||--o{ AGENT : contains
+    TEAM ||--o{ TASK : receives
+    TASK ||--o{ STEP : "broken into"
+    TASK ||--o{ EXECUTION : triggers
+    EXECUTION ||--o{ STEP_RESULT : produces
+
+    TEAM {
+        string id PK
+        string name
+        string strategy
+    }
+    AGENT {
+        string id PK
+        string role
+        string model
+    }
+    TASK {
+        string id PK
+        string prompt
+        string mode
+    }
+    EXECUTION {
+        string id PK
+        string status
+        float total_cost
+    }
 ```
+
+<br/>
+
+### Harness Engineering Preset
+
+A single `POST /api/teams/preset/harness` provisions the reference team:
+
+| Role | Model | Responsibility |
+|:-----|:------|:---------------|
+| **Orchestrator** | `claude-opus-4-6` | Decomposition, delegation, judgment |
+| **Backend** | `gpt-5.3-codex` | Logic, review, refactoring |
+| **Actor** | `claude-sonnet-4-6` | Primary code generation |
+| **Security** | `qwen3-coder` | Vulnerability analysis |
+| **Designer** | `gemini-3.1-pro` | UI evaluation, visual judgment |
+
+<br/>
 
 ## Quick Start
 
-### Prerequisites
-
-- Python 3.10+
-- Node.js 22+
-- LiteLLM proxy at `localhost:4000` (optional, for AI execution)
-
-### Backend
-
-```bash
-cd backend
-pip install -e ".[dev]"
-uvicorn src.main:app --host 0.0.0.0 --port 8800 --reload
-```
-
-### Frontend
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Open http://localhost:5173 — API proxied to `:8800` automatically.
-
-### Docker
+### Docker &mdash; recommended
 
 ```bash
 docker compose up -d
 ```
 
-Frontend at `:3000`, Backend at `:8800`.
+Frontend on `:3000` &middot; Backend on `:8800`
 
-## API
+### Manual
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/health` | Health check + LiteLLM status |
-| GET | `/api/dashboard` | Dashboard stats |
-| GET | `/api/models` | Available LiteLLM models |
-| POST | `/api/teams` | Create agent team |
-| POST | `/api/teams/preset/harness` | Create Harness Engineering preset team |
-| GET | `/api/teams` | List teams |
-| POST | `/api/tasks` | Create task with steps |
-| POST | `/api/tasks/{id}/execute` | Execute task (parallel/sequential) |
-| GET | `/api/executions` | List executions |
-| WS | `/ws` | Real-time execution updates |
+```bash
+# backend
+cd backend && pip install -e ".[dev]"
+uvicorn src.main:app --port 8800 --reload
 
-## Harness Engineering Team Preset
+# frontend
+cd frontend && npm install && npm run dev
+```
 
-One-click creation of the reference architecture:
+Open `http://localhost:5173` &mdash; API proxied automatically.
 
-| Agent | Model | Role |
-|-------|-------|------|
-| Opus Orchestrator | claude-opus-4-6 | Task decomposition, delegation, judgment |
-| Codex Backend | gpt-5.3-codex | Backend logic, code review, refactoring |
-| Sonnet Actor | claude-sonnet-4-6 | Main code writing, frontend |
-| Qwen Security | qwen3-coder | Security analysis, vulnerability review |
-| Gemini Designer | gemini-3.1-pro | UI design, visual judgment |
+> **Optional** &mdash; connect a [LiteLLM](https://docs.litellm.ai/) proxy at `localhost:4000` for live AI execution.
 
-## Tech Stack
+<br/>
 
-- **Frontend**: React 19, Vite 6, TailwindCSS 3.4, TypeScript 5.8
-- **Backend**: FastAPI, uvicorn, Pydantic v2
-- **Database**: SQLite (aiosqlite) — production-ready with WAL mode
-- **AI**: LiteLLM proxy (88+ models)
-- **Real-time**: WebSocket (native FastAPI)
-- **Deployment**: Docker, Harness.io CI/CD
+## API Reference
+
+| Method | Endpoint | Purpose |
+|:------:|:---------|:--------|
+| `GET` | `/api/health` | Liveness + LiteLLM status |
+| `GET` | `/api/dashboard` | Aggregate statistics |
+| `GET` | `/api/models` | Available models via LiteLLM |
+| `POST` | `/api/teams` | Create team |
+| `POST` | `/api/teams/preset/harness` | Provision preset team |
+| `GET` | `/api/teams` | List teams |
+| `POST` | `/api/tasks` | Create task with steps |
+| `POST` | `/api/tasks/{id}/execute` | Execute task |
+| `GET` | `/api/executions` | List executions |
+| `WS` | `/ws` | Real-time execution stream |
+
+<br/>
 
 ## Testing
 
 ```bash
-cd backend
-pytest tests/ -v    # 17 tests, ~2.6s
+cd backend && pytest tests/ -v   # 17 tests · ~2.6s
 ```
+
+<br/>
 
 ## License
 
-MIT — see [LICENSE](LICENSE)
+[MIT](LICENSE)
+
+---
+
+<div align="center">
+<sub>Built with precision. Designed for control.</sub>
+</div>
